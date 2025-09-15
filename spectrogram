@@ -1,0 +1,26 @@
+import numpy as np
+from scipy import signal
+import matplotlib.pyplot as plt
+
+# 波形データの作成
+fs = 10e3
+N = 1e5
+amp = 2 * np.sqrt(2)
+noise_power = 0.01 * fs / 2
+time = np.arange(N) / float(fs)
+mod = 500*np.cos(2*np.pi*0.25*time)
+carrier = amp * np.sin(2*np.pi*3e3*time + mod)
+noise = np.random.normal(scale=np.sqrt(noise_power), size=time.shape)
+noise *= np.exp(-time/5)
+x = carrier + noise
+
+# スペクトログラム分析の実施
+f, t, Sxx = signal.spectrogram(x, fs)
+
+# 図の描画
+plt.pcolormesh(t, f, 10*np.log(Sxx)) #intensityを修正
+plt.ylabel('Frequency [Hz]')
+plt.xlabel('Time [sec]')
+cbar = plt.colorbar() #カラーバー表示のため追加
+cbar.ax.set_ylabel("Intensity [dB]") #カラーバーの名称表示のため追加
+plt.show()
